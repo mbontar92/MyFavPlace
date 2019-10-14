@@ -25,6 +25,8 @@ class CustomButton: UIButton {
     
     func shakeButton() {
         let shake = CABasicAnimation(keyPath: "position")
+    
+        layer.cornerRadius = 5
         shake.duration      = 0.1
         shake.repeatCount   = 1
         shake.autoreverses  = true
@@ -35,7 +37,6 @@ class CustomButton: UIButton {
         shake.fromValue     = fromValue
         shake.toValue       = toValue
         layer.add(shake, forKey: "position")
-        
     }
 }
 

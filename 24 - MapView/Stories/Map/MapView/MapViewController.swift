@@ -12,68 +12,60 @@ import CoreLocation
 
 class MapViewController: UIViewController {
     
+    //MARK: - IBOutlets
+    
+    
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var adressLabel: UILabel!
     @IBOutlet weak var pinImage: UIImageView!
     
+    @IBOutlet weak var pinActionButtonLabel: CustomButton!
+    @IBOutlet weak var detailsActionButtonLabel: CustomButton!
+    @IBOutlet weak var savePinActionButtonLabel: CustomButton!
+    @IBOutlet weak var removeAnnotationActionLabel: CustomButton!
+    
     // location
     private var locationManager: CLLocationManager!
     let regionInMeters :Double = 2000
+    var lastLocation: CLLocation?
     
-    // model && array
+    
+    // MARK: - properties
+    
     var myPlace: MyPlace?
-    
     var myPlacesArray: [MyPlace] = []
     
-    private let userDefaultsKey = "Places"
-    
-    // MARK: - Buttons configure
-    // pin button
-    @IBOutlet weak var pinActionButtonLabel: CustomButton!
-    @IBAction func pinActionButton(_ sender: Any) {
-        pinImage.isHidden = !pinImage.isHidden
-    }
-    
-    
-    //detail button
-    @IBOutlet weak var detailsActionButtonLabel: CustomButton!
-    @IBAction func detailsActionButton(_ sender: Any) {
-    }
-    
-    
-    // button to seve annotation
-    @IBOutlet weak var savePinActionButtonLabel: CustomButton!
-    @IBAction func savePinActionButton(_ sender: Any) {
-        addAnnotation()
-    }
-    
-    // button to remove annotation
-    @IBOutlet weak var removeAnnotationActionLabel: CustomButton!
-    @IBAction func removeAnnotationAction(_ sender: Any) {
-        // remove from array
-        myPlacesArray.removeAll()
-        // remove from mapview
-        mapView.removeAnnotations(mapView.annotations)
-    }
-    
+    // MARK: - Life Cicle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupLocationServises()
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     
-    // MARK: - sending array to address view controller
+    // MARK: - Buttons configure
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // send array to CollectionView
-        if let detailController = segue.destination as? AddressDetailViewController {
-            //це вказано для того щоб отримати інформацію назад
+    @IBAction func pinActionButton(_ sender: Any) { pinImage.isHidden = !pinImage.isHidden }
+    
+    @IBAction func detailsActionButton(_ sender: Any) {
+        
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "MapViewPinDetail") as? MapViewPinDetail {
             
-            detailController.placeDelegete = self
-            detailController.detailMyPlaceArray = myPlacesArray
+            vc.detailMyPlaceArray = myPlacesArray
+            vc.delegete = self
+            show(vc, sender: nil)
         }
+    }
+    
+    @IBAction func savePinActionButton(_ sender: Any) { addAnnotation() }
+    
+    @IBAction func removeAnnotationAction(_ sender: Any) {
+        // remove from array
+        myPlacesArray.removeAll()
+        // remove from mapview
+        mapView.removeAnnotations(mapView.annotations)
     }
     
     // colation configure
@@ -86,7 +78,7 @@ class MapViewController: UIViewController {
             checkLocationAuthorization()
         }
     }
-    
+
     func checkLocationAuthorization() {
         
         switch CLLocationManager.authorizationStatus() {
@@ -109,16 +101,16 @@ class MapViewController: UIViewController {
     func startTrackingUserLocation () {
         locationManager.startUpdatingLocation()
         if let userCoordinate = locationManager.location?.coordinate {
-//            centerViewOnLocation(userCoordinate)
+            centerViewOnLocation(userCoordinate)
         }
     }
     
-//        // MARK - centerViewOnUserLocation
+    //        // MARK - centerViewOnUserLocation
     func centerViewOnLocation(_ location: CLLocationCoordinate2D) {
         let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
         mapView.setRegion(region, animated: true)
     }
-
+    
     
     // get Center Location
     func getCenterLocation(for: MKMapView) -> CLLocation {
@@ -126,33 +118,31 @@ class MapViewController: UIViewController {
         let longitude = mapView.centerCoordinate.longitude
         
         return CLLocation(latitude: latitude, longitude: longitude)
-        
     }
-    
-    
-    // MARK: - add annotation
+}
+
+ // MARK: - add annotation
+
+extension MapViewController {
+
     func addAnnotation () {
         
         let currentAnnotation = MKPointAnnotation()
-        
+
         let geoCoder: CLGeocoder = CLGeocoder()
         // set up annotation
-        currentAnnotation.coordinate = CLLocationCoordinate2D(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude )
         
+        currentAnnotation.coordinate = CLLocationCoordinate2D(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude )
         
         // get street name of annotation
         let center: CLLocation = CLLocation(latitude:mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
-        
         
         geoCoder.reverseGeocodeLocation(center) { [weak self] (placemarks, error) in
             if (error != nil)
             {
                 print("reverse geodcode fail: \(error!.localizedDescription)")
             }
-            guard let placemark = placemarks?.first else {
-                
-                return
-            }
+            guard let placemark = placemarks?.first else { return }
             guard let streetName = placemark.name else { return }
             
             currentAnnotation.title = streetName
@@ -160,7 +150,6 @@ class MapViewController: UIViewController {
             let country = placemark.country ?? ""
             
             let postalCode = placemark.postalCode ?? ""
-            
             
             // setup my model
             let place = MyPlace(title: streetName, coordinate: currentAnnotation.coordinate, country: country, postalCode: postalCode)
@@ -179,10 +168,13 @@ extension MapViewController: CLLocationManagerDelegate  {
     
     // update locations when moves - center is location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let userLocation = locations.last else { return }
+//        guard let userLocation = locations.last else { return }
         
-        let userRegion = MKCoordinateRegion.init(center: userLocation.coordinate, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
-        mapView.setRegion(userRegion, animated: true)
+        self.lastLocation = locations.last
+        
+        
+        //        let userRegion = MKCoordinateRegion.init(center: userLocation.coordinate, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
+        //        mapView.setRegion(userRegion, animated: true)
     }
     
     // change authorization
@@ -195,7 +187,7 @@ extension MapViewController: CLLocationManagerDelegate  {
 // MARK: - MapViewDelegate
 extension MapViewController: MKMapViewDelegate {
     
-    /// showing label text of the center view
+    // showing label text of the center view
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         let center = getCenterLocation(for: mapView)
         let geoCoder = CLGeocoder()
@@ -265,29 +257,12 @@ extension MapViewController: MKMapViewDelegate {
     }
 }
 
- // MARK: - save to Userdefaults
-extension MapViewController {
- 
-    private func savePlacesToUserDefaults() {
-        let encodeData = try? NSKeyedArchiver.archivedData(withRootObject: myPlacesArray, requiringSecureCoding: false)
-        
-        UserDefaults.standard.set(encodeData, forKey: userDefaultsKey)
-        UserDefaults.standard.synchronize()
-    }
-    
-    private func getAllSavedTasksFromUserDefaults() {
-        guard let decodedData = UserDefaults.standard.object(forKey: userDefaultsKey) as? Data else { return }
-        
-        let decodedTasks = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(decodedData)
-        if let places = decodedTasks as? [MyPlace] {
-            myPlacesArray = places
-        }
-    }
-}
+
 
 // receiving delegate information
 extension MapViewController: DeletePlaceDelegate {
     func didDeletePlace(placeToDelete: MyPlace) {
+        
         // дістаю індекс який потрібно видалити
         let index = myPlacesArray.firstIndex { $0.title == placeToDelete.title }
         
@@ -301,3 +276,4 @@ extension MapViewController: DeletePlaceDelegate {
         }
     }
 }
+
