@@ -16,6 +16,7 @@
 		6B045A6E222D838D00465BCE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B045A6C222D838D00465BCE /* LaunchScreen.storyboard */; };
 		6B05B50422343DF300FAEFCA /* MyPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B05B50322343DF300FAEFCA /* MyPlace.swift */; };
 		6BAF183F2354599600286024 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAF183E2354599600286024 /* UserDefaults.swift */; };
+		6BAF18452354A70400286024 /* 24 - MapView.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6BAF18432354A70400286024 /* 24 - MapView.xcdatamodeld */; };
 		6BEDE111223EC58000DD0626 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEDE110223EC58000DD0626 /* CustomButton.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 		6B045A6F222D838D00465BCE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B05B50322343DF300FAEFCA /* MyPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPlace.swift; sourceTree = "<group>"; };
 		6BAF183E2354599600286024 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		6BAF18442354A70400286024 /* 24 - MapView.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "24 - MapView.xcdatamodel"; sourceTree = "<group>"; };
 		6BEDE110223EC58000DD0626 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -56,6 +58,7 @@
 		6B045A57222D838A00465BCE = {
 			isa = PBXGroup;
 			children = (
+				6BAF18432354A70400286024 /* 24 - MapView.xcdatamodeld */,
 				6B045A62222D838A00465BCE /* 24 - MapView */,
 				6BB0E92A23544D4600EB66CB /* Supporting Files */,
 				6B045A61222D838A00465BCE /* Products */,
@@ -243,6 +246,7 @@
 				6B02E3E92232D7F5006B5065 /* PlaceTableViewCell.swift in Sources */,
 				6B05B50422343DF300FAEFCA /* MyPlace.swift in Sources */,
 				6BAF183F2354599600286024 /* UserDefaults.swift in Sources */,
+				6BAF18452354A70400286024 /* 24 - MapView.xcdatamodeld in Sources */,
 				6BEDE111223EC58000DD0626 /* CustomButton.swift in Sources */,
 				6B045A64222D838A00465BCE /* AppDelegate.swift in Sources */,
 			);
@@ -444,6 +448,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		6BAF18432354A70400286024 /* 24 - MapView.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				6BAF18442354A70400286024 /* 24 - MapView.xcdatamodel */,
+			);
+			currentVersion = 6BAF18442354A70400286024 /* 24 - MapView.xcdatamodel */;
+			path = "24 - MapView.xcdatamodeld";
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 6B045A58222D838A00465BCE /* Project object */;
 }

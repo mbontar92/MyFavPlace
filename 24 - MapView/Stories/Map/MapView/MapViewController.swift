@@ -9,6 +9,7 @@
 import UIKit
 import MapKit
 import CoreLocation
+import CoreData
 
 class MapViewController: UIViewController {
     
@@ -29,6 +30,8 @@ class MapViewController: UIViewController {
     let regionInMeters :Double = 2000
     var lastLocation: CLLocation?
     
+    var newUser: NSManagedObject?
+    
     
     // MARK: - properties
     
@@ -42,6 +45,7 @@ class MapViewController: UIViewController {
         
         setupLocationServises()
         self.navigationController?.navigationBar.isHidden = true
+        coreDataSetUp()
     }
     
     
@@ -61,11 +65,26 @@ class MapViewController: UIViewController {
     
     @IBAction func savePinActionButton(_ sender: Any) { addAnnotation() }
     
+    @IBAction func currentLocationActionButton(_ sender: Any) {
+        
+        let userRegion = MKCoordinateRegion.init(center: locationManager.location?.coordinate ?? CLLocationCoordinate2D(), latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
+        mapView.setRegion(userRegion, animated: true)
+    }
+    
+    
     @IBAction func removeAnnotationAction(_ sender: Any) {
         // remove from array
         myPlacesArray.removeAll()
         // remove from mapview
         mapView.removeAnnotations(mapView.annotations)
+    }
+    
+    func coreDataSetUp() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "Coordinates", in: context)
+        let newUser = NSManagedObject(entity: entity!, insertInto: context)
+        self.newUser = newUser
     }
     
     // colation configure
@@ -156,6 +175,10 @@ extension MapViewController {
             // adding to array
             self?.myPlacesArray.append(place)
             
+            self?.newUser?.setValue(placemark.region?.identifier, forKey: "coordinates")
+            self?.newUser?.setValue(country, forKey: "country")
+            self?.newUser?.setValue(streetName, forKey: "street")
+    
             // adding annotation to mapview
             
             self?.mapView.addAnnotation(place)
@@ -240,10 +263,8 @@ extension MapViewController: MKMapViewDelegate {
                 let locationValue: CLLocationCoordinate2D = view.annotation?.coordinate ?? CLLocationCoordinate2D()
                 let latitude : String = locationValue.latitude.description
                 let longitude: String = locationValue.longitude.description
-                
-//                 mapView.selectedAnnotations
-                
-                let allert = UIAlertController(title: placeName ?? "" , message: "latitude : \(latitude) \n longitude : \(longitude)", preferredStyle: .alert)
+                                
+                let allert = UIAlertController(title: placeName ?? "" , message: "\(latitude) \n \(longitude)", preferredStyle: .alert)
                 allert.addAction(UIAlertAction(title: "thanks", style: .default))
                 present(allert, animated: true)
             }
